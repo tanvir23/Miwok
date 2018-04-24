@@ -2,8 +2,10 @@ package com.newbieiot.miwok;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +17,11 @@ import java.util.ArrayList;
 
 public class WordAdapter extends ArrayAdapter<Word> {
 
-    public WordAdapter(Activity context, ArrayList<Word> words){
+    private int adapterColor;
+
+    public WordAdapter(Activity context, ArrayList<Word> words, int adapterColor){
         super(context,0, words);
+        this.adapterColor = adapterColor;
     }
 
     @NonNull
@@ -30,6 +35,7 @@ public class WordAdapter extends ArrayAdapter<Word> {
         if(listItemView == null){
             listItemView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
         }
+
 
         // get the object in this position of arraylist
         Word currentWord = getItem(position);
@@ -50,8 +56,13 @@ public class WordAdapter extends ArrayAdapter<Word> {
             refImage.setVisibility(View.GONE);
         }
 
+        // set text background color
+        View textContainer = listItemView.findViewById(R.id.text_container);
+        int color = ContextCompat.getColor(getContext(),this.adapterColor);
+        textContainer.setBackgroundColor(color);
 
 
         return listItemView;
     }
+
 }
