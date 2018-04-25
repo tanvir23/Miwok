@@ -1,5 +1,7 @@
 package com.newbieiot.miwok;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +22,23 @@ public class PhrasesActivity extends AppCompatActivity {
         }
     };
 
+    private AudioManager audioManager;
+
+    private AudioManager.OnAudioFocusChangeListener audioFocusChangeListener =
+            new AudioManager.OnAudioFocusChangeListener() {
+                @Override
+                public void onAudioFocusChange(int focusChange) {
+                    if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
+                            focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                        mediaPlayer.pause();
+                    } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                        mediaPlayer.start();
+                    } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                        releaseMediaPlayer();
+                    }
+                }
+            };
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -30,6 +49,10 @@ public class PhrasesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_view);
+
+        // setup audiomanager to request audio focus when needed
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
         final ArrayList<Word> words = new ArrayList<>();
         words.add(new Word("Where are you going?", "minto wuksus",
                     R.raw.phrase_where_are_you_going));
@@ -62,15 +85,19 @@ public class PhrasesActivity extends AppCompatActivity {
                 // check if media player is being used and if so, release it
                 releaseMediaPlayer();
 
-                // create media track
-                mediaPlayer = MediaPlayer.create(PhrasesActivity.this, word.getRefAudio());
+                int result = audioManager.requestAudioFocus(audioFocusChangeListener,
+                        AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
-                // start playing
-                mediaPlayer.start();
+                if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    // create media track
+                    mediaPlayer = MediaPlayer.create(PhrasesActivity.this, word.getRefAudio());
 
-                // set listener to release resources when finish playing
-                mediaPlayer.setOnCompletionListener(completionListener);
+                    // start playing
+                    mediaPlayer.start();
 
+                    // set listener to release resources when finish playing
+                    mediaPlayer.setOnCompletionListener(completionListener);
+                }
             }
         });
     }
@@ -79,6 +106,7 @@ public class PhrasesActivity extends AppCompatActivity {
         if(this.mediaPlayer != null) {
             this.mediaPlayer.release();
             this.mediaPlayer = null;
+            audioManager.abandonAudioFocus(audioFocusChangeListener);
         }
     }
 }
