@@ -10,7 +10,16 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 public class ColorsActivity extends AppCompatActivity {
+
     private MediaPlayer mediaPlayer;
+
+    private MediaPlayer.OnCompletionListener completionListener = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            releaseMediaPlayer();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,10 +49,27 @@ public class ColorsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word = words.get(position);
+                // check if media player is being used and if so, release it
+                releaseMediaPlayer();
+
+                // create media track
                 mediaPlayer = MediaPlayer.create(ColorsActivity.this, word.getRefAudio());
+
+                // start playing
                 mediaPlayer.start();
+
+                // set listener to release resources when finish playing
+                mediaPlayer.setOnCompletionListener(completionListener);
+
 
             }
         });
+    }
+
+    private void releaseMediaPlayer(){
+        if(this.mediaPlayer != null) {
+            this.mediaPlayer.release();
+            this.mediaPlayer = null;
+        }
     }
 }
