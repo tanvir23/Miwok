@@ -7,15 +7,20 @@ public class Word {
     private int refImage = NO_IMG;
     private static final int NO_IMG = -1;
 
-    public Word(String defaultWord, String miwokWord, int refImage){
+
+    private int refAudio;
+
+    public Word(String defaultWord, String miwokWord, int refImage, int refAudio){
         this.defaultWord = defaultWord;
         this.miwokWord = miwokWord;
         this.refImage = refImage;
+        this.refAudio = refAudio;
     }
 
-    public Word(String defaultWord, String miwokWord){
+    public Word(String defaultWord, String miwokWord, int refAudio){
         this.defaultWord = defaultWord;
         this.miwokWord = miwokWord;
+        this.refAudio = refAudio;
     }
 
     public int getRefImage() {
@@ -43,5 +48,9 @@ public class Word {
     }
 
     public boolean hasImage(){ return refImage != NO_IMG; }
+
+    public int getRefAudio() {
+        return refAudio;
+    }
 
 }
