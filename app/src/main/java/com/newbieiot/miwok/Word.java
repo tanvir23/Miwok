@@ -27,24 +27,12 @@ public class Word {
         return refImage;
     }
 
-    public void setRefImage(int refImage) {
-        this.refImage = refImage;
-    }
-
     public String getDefaultWord() {
         return defaultWord;
     }
 
-    public void setDefaultWord(String defaultWord) {
-        this.defaultWord = defaultWord;
-    }
-
     public String getMiwokWord() {
         return miwokWord;
-    }
-
-    public void setMiwokWord(String miwokWord) {
-        this.miwokWord = miwokWord;
     }
 
     public boolean hasImage(){ return refImage != NO_IMG; }
